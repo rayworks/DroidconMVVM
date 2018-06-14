@@ -9,8 +9,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import upday.droidconmvvm.datamodel.IDataModel;
 import upday.droidconmvvm.model.Language;
 import upday.droidconmvvm.schedulers.ImmediateSchedulerProvider;
@@ -19,8 +19,7 @@ import static upday.droidconmvvm.model.Language.LanguageCode;
 
 public class MainViewModelTest {
 
-    @Mock
-    private IDataModel mDataModel;
+    @Mock private IDataModel mDataModel;
 
     private MainViewModel mMainViewModel;
 
@@ -37,7 +36,7 @@ public class MainViewModelTest {
         Language en = new Language("English", LanguageCode.EN);
         List<Language> languages = Arrays.asList(de, en);
         Mockito.when(mDataModel.getSupportedLanguages()).thenReturn(Observable.just(languages));
-        TestSubscriber<List<Language>> testSubscriber = new TestSubscriber<>();
+        TestObserver<List<Language>> testSubscriber = new TestObserver<>();
 
         mMainViewModel.getSupportedLanguages().subscribe(testSubscriber);
 
@@ -47,7 +46,7 @@ public class MainViewModelTest {
 
     @Test
     public void testGetGreeting_doesNotEmit_whenNoLanguageSet() {
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        TestObserver<String> testSubscriber = new TestObserver<>();
         mMainViewModel.getGreeting().subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
@@ -59,8 +58,8 @@ public class MainViewModelTest {
         String enGreeting = "Hello";
         Language en = new Language("English", LanguageCode.EN);
         Mockito.when(mDataModel.getGreetingByLanguageCode(LanguageCode.EN))
-               .thenReturn(Observable.just(enGreeting));
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+                .thenReturn(Observable.just(enGreeting));
+        TestObserver<String> testSubscriber = new TestObserver<>();
         mMainViewModel.getGreeting().subscribe(testSubscriber);
 
         mMainViewModel.languageSelected(en);
@@ -69,4 +68,3 @@ public class MainViewModelTest {
         testSubscriber.assertValue(enGreeting);
     }
 }
-
